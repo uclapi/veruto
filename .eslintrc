@@ -1,0 +1,10 @@
+{
+  "plugins": [
+    "jsx-control-statements"
+  ],
+  "extends": [
+    "airbnb",
+    "plugin:jsx-control-statements/recommended"
+  ],
+  "parser": "babel-eslint",
+}
