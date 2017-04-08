@@ -1,83 +1,59 @@
-import React, {Component} from 'react';
+import React, { Component, PropTypes } from 'react';
 import {
-  Text,
   View,
-  ScrollView,
-  TouchableOpacity,
-  StyleSheet
+  StyleSheet,
+  Picker,
 } from 'react-native';
 
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: 'white',
+    padding: 20,
+  },
+  button: {
+    textAlign: 'center',
+    fontSize: 18,
+    marginBottom: 10,
+    marginTop: 10,
+    color: 'blue',
+  },
+});
+
 export default class ModalSettingsScreen extends Component {
+  static propTypes = {
+    navigator: PropTypes.any,
+  };
+
   static navigatorButtons = {
     leftButtons: [{
       title: 'Close',
-      id: 'close'
-    }]
+      id: 'close',
+    }],
   };
   constructor(props) {
     super(props);
     // if you want to listen on navigator events, set this up
     this.props.navigator.setOnNavigatorEvent(this.onNavigatorEvent.bind(this));
   }
-  render() {
-    return (
-      <View style={styles.container}>
-
-        <TouchableOpacity onPress={ this.onPushPress.bind(this) }>
-          <Text style={styles.button}>Push Plain Screen</Text>
-        </TouchableOpacity>
-
-        <TouchableOpacity onPress={ this.onPushStyledPress.bind(this) }>
-          <Text style={styles.button}>Push Styled Screen</Text>
-        </TouchableOpacity>
-
-        <TouchableOpacity onPress={ this.onClosePress.bind(this) }>
-          <Text style={styles.button}>Close Modal</Text>
-        </TouchableOpacity>
-
-        <TouchableOpacity onPress={ this.onCloseAllPress.bind(this) }>
-          <Text style={styles.button}>Close All Modals</Text>
-        </TouchableOpacity>
-
-      </View>
-    );
-  }
   onNavigatorEvent(event) {
-    if (event.id == 'close') {
+    if (event.id === 'close') {
       this.props.navigator.dismissModal();
     }
   }
-  onPushPress() {
-    this.props.navigator.push({
-      title: "More",
-      screen: "example.PushedScreen"
-    });
+  render() {
+    return (
+      <View style={styles.container}>
+        <Picker
+          selectedValue={"40"}
+          // onValueChange={(lang) => this.setState({language: lang})}
+        >
+          <Picker.Item label={"30"} value={"30"} />
+          <Picker.Item label={"45"} value={"45"} />
+          <Picker.Item label={"60"} value={"60"} />
+        </Picker>
+      </View>
+    );
   }
-  onPushStyledPress() {
-    this.props.navigator.push({
-      title: "More",
-      screen: "example.StyledScreen"
-    });
-  }
-  onClosePress() {
-    this.props.navigator.dismissModal();
-  }
-  onCloseAllPress() {
-    this.props.navigator.dismissAllModals();
-  }
-}
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: 'white',
-    padding: 20
-  },
-  button: {
-    textAlign: 'center',
-    fontSize: 18,
-    marginBottom: 10,
-    marginTop:10,
-    color: 'blue'
-  }
-});
+}

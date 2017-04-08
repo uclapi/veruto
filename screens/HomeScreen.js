@@ -42,11 +42,20 @@ export default class HomeScreen extends Component {
     navigator: PropTypes.any,
   };
 
+  static navigatorButtons = {
+    rightButtons: [
+      {
+        title: 'Settings',
+        id: 'settings',
+      },
+    ],
+  };
+
   constructor(props) {
     super(props);
     this.updateLocation = this.updateLocation.bind(this);
     this.onRefresh = this.onRefresh.bind(this);
-    // this.props.navigator.setOnNavigatorEvent(this.onNavigatorEvent.bind(this));
+    this.props.navigator.setOnNavigatorEvent(this.onNavigatorEvent.bind(this));
 
     this.state = {
       long: 'unknown',
@@ -60,6 +69,15 @@ export default class HomeScreen extends Component {
 
   componentDidMount() {
     this.updateLocation();
+  }
+
+  onNavigatorEvent(event) {
+    if (event.id === 'settings') {
+      this.props.navigator.showModal({
+        title: 'Settings',
+        screen: 'veruto.ModalSettingsScreen',
+      });
+    }
   }
 
   onRefresh() {
