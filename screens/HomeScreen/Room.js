@@ -26,6 +26,7 @@ export default class Room extends Component {
     diary: PropTypes.string,
     map: PropTypes.string,
     children: PropTypes.node,
+    distance: PropTypes.number,
   };
   constructor(props) {
     super(props);
@@ -55,6 +56,7 @@ export default class Room extends Component {
     return (
       <View style={styles.container}>
         <View style={styles.leftContainer}>
+          <Text>{`${this.props.distance}m`}</Text>
           <Text>{this.props.children}</Text>
         </View>
         <View style={styles.rightContainer}>
