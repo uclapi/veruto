@@ -5,15 +5,6 @@ import os
 import requests
 
 
-def contains_ts(ts, start, end):
-    """
-    takes 3 datetimes
-    checks if `ts` is contained within `start` and `end`
-    """
-
-    return start <= ts <= end
-
-
 def overlaps(start1, end1, start2, end2):
     """
     takes 4 datetimes
@@ -93,28 +84,18 @@ def fetch_free_rooms(minutes=0):
         siteid = booking["siteid"]
         roomid = booking["roomid"]
 
-        if minutes == 0:
-            if contains_ts(ts=now, start=start, end=end):
-
-                for room in all_rooms:
-                    if (
-                        room["roomid"] == roomid and
-                        room["siteid"] == siteid
-                    ):
-                        occupied_rooms.append(room)
-        else:
-            if overlaps(
-                start1=start,
-                end1=end,
-                start2=now,
-                end2=time_period_end
-            ):
-                for room in all_rooms:
-                    if (
-                        room["roomid"] == roomid and
-                        room["siteid"] == siteid
-                    ):
-                        occupied_rooms.append(room)
+        if overlaps(
+            start1=start,
+            end1=end,
+            start2=now,
+            end2=time_period_end
+        ):
+            for room in all_rooms:
+                if (
+                    room["roomid"] == roomid and
+                    room["siteid"] == siteid
+                ):
+                    occupied_rooms.append(room)
 
     free_rooms = []
     for room in all_rooms:
