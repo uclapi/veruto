@@ -3,25 +3,19 @@ import { View, Text, StyleSheet } from 'react-native';
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
-    padding: 8,
-    flexDirection: 'row',
-    alignItems: 'center',
+    paddingTop: 30,
+    paddingBottom: 5,
     backgroundColor: '#C1C1C1',
   },
-  input: {
-    height: 30,
-    flex: 1,
-    paddingHorizontal: 8,
-    fontSize: 15,
-    backgroundColor: '#FFFFFF',
-    borderRadius: 2,
+  title: {
+    textAlign: 'center',
+    fontWeight: 'bold',
   },
 });
 
-const Header = (props) => (
+const Header = () => (
   <View style={styles.container}>
-    <Text>Closest Rooms</Text>
+    <Text style={styles.title}>Closest Rooms</Text>
   </View>
 );
 
