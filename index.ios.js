@@ -6,7 +6,6 @@ import {
  ListView,
  RefreshControl,
 } from 'react-native';
-import Moment from 'moment';
 
 import Header from './Header';
 import Room from './Room';
@@ -69,41 +68,23 @@ export default class veruto extends Component {
     navigator.geolocation.getCurrentPosition(
       (position) => {
         console.log(position);
-        fetch('https://ucl-free.herokuapp.com/allRooms')
+        fetch('http://localhost:5000/api/rooms.free')
         .then(response => response.json())
         .then(json => {
           console.log(json);
 
-          const allRooms = json;
-          const currentTime = new Moment(new Date());
-          const endTime = new Moment(new Date()).add(30, 'minutes');
-          const freeRooms = [];
+          const freeRooms = json.rooms;
 
-          for (let i = 0; i < allRooms.length; i++) {
-            const bookings = allRooms[i].diary;
-            let roomIsFree = true;
-            for (let k = 0; k < bookings.length; k++) {
-              const bookingStart = new Moment(bookings[k].booking_start, 'hh:mm');
-              const bookingEnd = new Moment(bookings[k].booking_end, 'hh:mm');
-              if ((currentTime < bookingEnd && endTime > bookingStart)) {
-                roomIsFree = false;
-                break;
-              }
-            }
-            if (roomIsFree) {
-              freeRooms.push(allRooms[i]);
-            }
-          }
           freeRooms.sort((a, b) => {
             const distance1 = getDistanceFromLatLonInKm(
               position.coords.latitude,
               position.coords.longitude,
-              a.latlng[0], a.latlng[1]
+              a.location.coordinates.lat, a.location.coordinates.lng
             );
             const distance2 = getDistanceFromLatLonInKm(
               position.coords.latitude,
               position.coords.longitude,
-              b.latlng[0], b.latlng[1]
+              b.location.coordinates.lat, b.location.coordinates.lng
             );
             if (distance1 > distance2) {
               return 1;
@@ -133,7 +114,7 @@ export default class veruto extends Component {
       <View style={styles.container}>
         <ListView
           dataSource={this.state.dataSource}
-          renderRow={(room) => <Room diary={room.diary_link} map={`http://maps.apple.com/?ll=<${room.latlng[0]}>,<${room.latlng[1]}>`}>{room.name}</Room>}
+          renderRow={(room) => <Room diary={`https://roombooking.ucl.ac.uk/rb/bookableSpace/roomDiary.html?room=${room.roomid}&building=${room.siteid}&invoker=EFD`} map={`http://maps.apple.com/?ll=<${room.location.coordinates.lat}>,<${room.location.coordinates.lng}>`}>{room.roomname}</Room>}
           initialListSize={100}
           refreshControl={
             <RefreshControl
