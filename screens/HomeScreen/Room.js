@@ -6,18 +6,27 @@ const styles = StyleSheet.create({
     flex: 1,
     padding: 8,
     flexDirection: 'row',
-    justifyContent: 'space-between',
+    paddingBottom: 0,
   },
   leftContainer: {
     flex: 1,
     flexDirection: 'row',
-    justifyContent: 'flex-start',
   },
   rightContainer: {
     flex: 1,
     flexDirection: 'row',
     justifyContent: 'flex-end',
     alignItems: 'center',
+  },
+  columnContainer: {
+    flex: 1,
+    flexDirection: 'column',
+    paddingTop: 0,
+  },
+  roomnameContainer: {
+  },
+  freeUntil: {
+    fontSize: 10,
   },
 });
 
@@ -54,21 +63,25 @@ export default class Room extends Component {
   }
   render() {
     return (
-      <View style={styles.container}>
-        <View style={styles.leftContainer}>
-          <Text>{`${this.props.distance}m`}</Text>
-          <Text>{this.props.children}</Text>
+      <View>
+        <View style={styles.container}>
+          <View style={styles.leftContainer}>
+            <Text>{`${this.props.distance}m`}</Text>
+            <Text>{" "}</Text>
+            <Text>{this.props.children}</Text>
+          </View>
+          <View style={styles.rightContainer}>
+            <Button
+              onPress={this.openDiary}
+              title={"Diary"}
+            />
+            <Button
+              onPress={this.openMap}
+              title={"Map"}
+            />
+          </View>
         </View>
-        <View style={styles.rightContainer}>
-          <Button
-            onPress={this.openDiary}
-            title={"Diary"}
-          />
-          <Button
-            onPress={this.openMap}
-            title={"Map"}
-          />
-        </View>
+
       </View>
     );
   }
