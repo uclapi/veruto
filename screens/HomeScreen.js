@@ -5,6 +5,7 @@ import {
   ListView,
   RefreshControl,
   Alert,
+  AsyncStorage,
 } from 'react-native';
 
 // import Header from './HomeScreen/Header';
@@ -36,6 +37,7 @@ const styles = StyleSheet.create({
   },
 });
 
+const MINUTES_FUTURE_KEY = '@Settings:minutes';
 
 export default class HomeScreen extends Component {
   static propTypes = {
@@ -64,6 +66,7 @@ export default class HomeScreen extends Component {
       dataSource: new ListView.DataSource({ rowHasChanged: (r1, r2) => r1 !== r2 }),
       refreshing: false,
       initialLoad: true,
+      minutesFuture: 30,
     };
   }
 
@@ -72,11 +75,18 @@ export default class HomeScreen extends Component {
   }
 
   onNavigatorEvent(event) {
-    if (event.id === 'settings') {
-      this.props.navigator.showModal({
-        title: 'Settings',
-        screen: 'veruto.ModalSettingsScreen',
-      });
+    switch (event.id) {
+      case 'settings':
+        this.props.navigator.showModal({
+          title: 'Settings',
+          screen: 'veruto.ModalSettingsScreen',
+        });
+        break;
+      case 'didAppear':
+        this.loadSettings().done();
+        break;
+      default:
+        return;
     }
   }
 
@@ -90,7 +100,7 @@ export default class HomeScreen extends Component {
     navigator.geolocation.getCurrentPosition(
       (position) => {
         console.log(position);
-        fetch('http://localhost:5000/api/rooms.free')
+        fetch(`http://localhost:5000/api/rooms.free?minutes=${this.state.minutesFuture}`)
         .then(response => response.json())
         .then(json => {
           const freeRooms = json.rooms;
@@ -138,6 +148,20 @@ export default class HomeScreen extends Component {
      { enableHighAccuracy: true, timeout: 20000, maximumAge: 1000 }
     );
   }
+
+  loadSettings = async () => {
+    try {
+      const value = await AsyncStorage.getItem(MINUTES_FUTURE_KEY);
+      if (value !== null) {
+        this.setState({ minutesFuture: value });
+        console.log(`Recovered selection from disk: ${value}`);
+      } else {
+        console.log('Initialized with no selection on disk.');
+      }
+    } catch (error) {
+      Alert.alert(`AsyncStorage error: ${error.message}`);
+    }
+  };
 
   render() {
     return (

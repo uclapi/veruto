@@ -3,6 +3,8 @@ import {
   View,
   StyleSheet,
   Picker,
+  AsyncStorage,
+  Alert,
 } from 'react-native';
 
 const styles = StyleSheet.create({
@@ -20,6 +22,8 @@ const styles = StyleSheet.create({
   },
 });
 
+const MINUTES_FUTURE_KEY = '@Settings:minutes';
+
 export default class ModalSettingsScreen extends Component {
   static propTypes = {
     navigator: PropTypes.any,
@@ -31,22 +35,57 @@ export default class ModalSettingsScreen extends Component {
       id: 'close',
     }],
   };
+
   constructor(props) {
     super(props);
     // if you want to listen on navigator events, set this up
     this.props.navigator.setOnNavigatorEvent(this.onNavigatorEvent.bind(this));
   }
+  state = {
+    minutes: 30,
+  }
+
+  componentDidMount() {
+    this.loadInitialState().done();
+  }
+
   onNavigatorEvent(event) {
     if (event.id === 'close') {
       this.props.navigator.dismissModal();
     }
   }
+
+  onValueChange = async (selectedValue) => {
+    this.setState({ minutes: parseInt(selectedValue, 10) });
+    try {
+      await AsyncStorage.setItem(MINUTES_FUTURE_KEY, selectedValue);
+      console.log(`Saved selection to disk: ${selectedValue}`);
+    } catch (error) {
+      Alert.alert(`AsyncStorage error: ${error.message}`);
+    }
+  };
+
+  loadInitialState = async () => {
+    try {
+      const value = await AsyncStorage.getItem(MINUTES_FUTURE_KEY);
+      if (value !== null) {
+        this.setState({ minutes: value });
+        console.log(`Recovered selection from disk: ${value}`);
+      } else {
+        console.log('Initialized with no selection on disk.');
+      }
+    } catch (error) {
+      Alert.alert(`AsyncStorage error: ${error.message}`);
+    }
+  };
+
+
   render() {
     return (
       <View style={styles.container}>
         <Picker
-          selectedValue={"40"}
-          // onValueChange={(lang) => this.setState({language: lang})}
+          selectedValue={this.state.minutes.toString()}
+          onValueChange={this.onValueChange}
         >
           <Picker.Item label={"30"} value={"30"} />
           <Picker.Item label={"45"} value={"45"} />
