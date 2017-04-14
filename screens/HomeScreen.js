@@ -1,10 +1,10 @@
 import React, { Component, PropTypes } from 'react';
 import {
- // AppRegistry,
- StyleSheet,
- View,
- ListView,
- RefreshControl,
+  StyleSheet,
+  View,
+  ListView,
+  RefreshControl,
+  Alert,
 } from 'react-native';
 
 // import Header from './HomeScreen/Header';
@@ -102,11 +102,11 @@ export default class HomeScreen extends Component {
               room.location.coordinates.lng,
             );
             const finalRoom = room;
-            finalRoom.distance = distance.toPrecision(3) * 1000;
+            finalRoom.distance = distance.toPrecision(1) * 1000;
             return finalRoom;
           });
 
-          freeRooms.sort((a, b) => {
+          rooms.sort((a, b) => {
             const distance1 = getDistanceFromLatLonInKm(
               position.coords.latitude,
               position.coords.longitude,
@@ -134,7 +134,7 @@ export default class HomeScreen extends Component {
         })
        .catch(error => console.log(error));
       },
-     (error) => alert(JSON.stringify(error)),
+     (error) => Alert.alert(JSON.stringify(error)),
      { enableHighAccuracy: true, timeout: 20000, maximumAge: 1000 }
     );
   }
