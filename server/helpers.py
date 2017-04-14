@@ -13,10 +13,11 @@ def overlaps(start1, end1, start2, end2):
     return max(start1, start2) < min(end1, end2)
 
 
+# Start type hinting
 def rooms_identical(room1, room2):
     """
-    takes 2
-    checks if they are the same
+    takes 2 rooms
+    checks if they are the same and returns bool
     """
     return (
         room1["roomid"] == room2["roomid"] and
@@ -24,20 +25,7 @@ def rooms_identical(room1, room2):
     )
 
 
-def fetch_free_rooms(minutes=0):
-    now = datetime.datetime.now(pytz.timezone("Europe/London"))
-
-    future_minutes = datetime.timedelta(
-        minutes=minutes
-    )
-    time_period_end = now + future_minutes
-
-    today = "{year}{month}{day}".format(
-        year=now.year,
-        month=str(now.month).zfill(2),
-        day=str(now.day).zfill(2)
-    )
-
+def get_all_rooms():
     url = "https://uclapi.com/roombookings/rooms"
     params = {
         "token": os.environ["UCLAPI_TOKEN"]
@@ -45,11 +33,15 @@ def fetch_free_rooms(minutes=0):
     r = requests.get(url, params=params)
     all_rooms = r.json()["rooms"]
 
+    return all_rooms
+
+
+def get_bookings_by_date(date):
     url = "https://uclapi.com/roombookings/bookings"
 
     params = {
         "token": os.environ["UCLAPI_TOKEN"],
-        "date": today
+        "date": date
     }
     req = requests.get(url, params=params)
 
@@ -75,34 +67,79 @@ def fetch_free_rooms(minutes=0):
         else:
             next_page = False
 
-    occupied_rooms = []
-    for booking in bookings:
+    return bookings
 
-        start = ciso8601.parse_datetime(booking["start_time"])
-        end = ciso8601.parse_datetime(booking["end_time"])
 
-        siteid = booking["siteid"]
-        roomid = booking["roomid"]
-
-        if overlaps(
-            start1=start,
-            end1=end,
-            start2=now,
-            end2=time_period_end
+def get_room_by_ids(rooms, siteid, roomid):
+    for room in rooms:
+        if (
+            room["roomid"] == roomid and
+            room["siteid"] == siteid
         ):
-            for room in all_rooms:
-                if (
-                    room["roomid"] == roomid and
-                    room["siteid"] == siteid
-                ):
-                    occupied_rooms.append(room)
+            return room
+
+
+def get_bookings_for_room(bookings, siteid, roomid):
+    # use map here instead
+    bookings_for_room = []
+    for booking in bookings:
+        if (
+            bookings["roomid"] == roomid and
+            bookings["siteid"] == siteid
+        ):
+            bookings_for_room.append(booking)
+    return bookings_for_room
+
+
+def filter_for_free_rooms(all_rooms, bookings, f_start, f_end):
+    rooms_with_bookings = list(all_rooms)
+    for room, idx in enumerate(all_rooms):
+        bookings = get_bookings_for_room(bookings, room.siteid, room.roomid)
+        rooms_with_bookings[idx]["bookings"] = bookings
 
     free_rooms = []
-    for room in all_rooms:
-        for occupied_room in occupied_rooms:
-            if rooms_identical(room, occupied_room):
+    for room in rooms_with_bookings:
+        for booking in room["bookings"]:
+
+            start = ciso8601.parse_datetime(booking["start_time"])
+            end = ciso8601.parse_datetime(booking["end_time"])
+
+            if overlaps(
+                start1=start,
+                end1=end,
+                start2=f_start,
+                end2=f_end
+            ):
                 break
         else:
             free_rooms.append(room)
+
+    return free_rooms
+
+
+def fetch_free_rooms(minutes=0):
+    now = datetime.datetime.now(pytz.timezone("Europe/London"))
+
+    all_rooms = get_all_rooms()
+
+    future_minutes = datetime.timedelta(
+        minutes=minutes
+    )
+    time_period_end = now + future_minutes
+
+    today = "{year}{month}{day}".format(
+        year=now.year,
+        month=str(now.month).zfill(2),
+        day=str(now.day).zfill(2)
+    )
+
+    bookings = get_bookings_by_date(today)
+
+    free_rooms = filter_for_free_rooms(
+        all_rooms,
+        bookings,
+        now,
+        time_period_end
+    )
 
     return free_rooms
