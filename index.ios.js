@@ -12,8 +12,8 @@ const createTabs = () => {
   const tabs = [
     {
       screen: 'veruto.HomeScreen',
-      icon: require('./images/one.png'),
-      selectedIcon: require('./images/one_selected.png'),
+      icon: require('./images/home.png'),
+      selectedIcon: require('./images/home_selected.png'),
       title: 'Closest Rooms',
     },
     {
