@@ -5,6 +5,7 @@ import {
   Picker,
   AsyncStorage,
   Alert,
+  Text,
 } from 'react-native';
 
 const styles = StyleSheet.create({
@@ -30,7 +31,7 @@ export default class ModalSettingsScreen extends Component {
   };
 
   static navigatorButtons = {
-    leftButtons: [{
+    rightButtons: [{
       title: 'Close',
       id: 'close',
     }],
@@ -83,13 +84,14 @@ export default class ModalSettingsScreen extends Component {
   render() {
     return (
       <View style={styles.container}>
+        <Text>{"All displayed rooms should be free for the next"}</Text>
         <Picker
           selectedValue={this.state.minutes.toString()}
           onValueChange={this.onValueChange}
         >
-          <Picker.Item label={"30"} value={"30"} />
-          <Picker.Item label={"45"} value={"45"} />
-          <Picker.Item label={"60"} value={"60"} />
+          <Picker.Item label={"30 minutes"} value={"30"} />
+          <Picker.Item label={"45 minutes"} value={"45"} />
+          <Picker.Item label={"60 minutes"} value={"60"} />
         </Picker>
       </View>
     );
