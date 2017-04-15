@@ -3,11 +3,10 @@ import {
   StyleSheet,
   Alert,
 } from 'react-native';
-// import { Navigation } from 'react-native-navigation';
 
 import MapView from 'react-native-maps';
+import { connect } from 'react-redux';
 
-import { getDistanceFromLatLonInKm } from './HomeScreen/helpers';
 
 const styles = StyleSheet.create({
   map: {
@@ -15,75 +14,16 @@ const styles = StyleSheet.create({
   },
 });
 
-export default class MapScreen extends Component {
+class MapScreen extends Component {
   static propTypes = {
     navigator: PropTypes.any,
+    freeRooms: PropTypes.array.isRequired,
+    userPosition: PropTypes.object.isRequired,
   };
-
   constructor(props) {
     super(props);
-    this.updateLocation = this.updateLocation.bind(this);
-    // if you want to listen on navigator events, set this up
-    // this.props.navigator.setOnNavigatorEvent(this.onNavigatorEvent.bind(this));
-
-    this.state = {
-      long: 'unknown',
-      lat: 'unknown',
-      position: 'unknown',
-      rooms: [
-        {
-          location: {
-            coordinates: {
-              lat: 0.0,
-              lng: 0.0,
-            },
-          },
-        },
-      ],
-    };
-  }
-
-  componentDidMount() {
-    this.updateLocation();
-  }
-
-  updateLocation() {
-    navigator.geolocation.getCurrentPosition(
-      (position) => {
-        fetch('http://localhost:5000/api/rooms.free')
-        .then(response => response.json())
-        .then(json => {
-          const freeRooms = json.rooms;
-
-          freeRooms.sort((a, b) => {
-            const distance1 = getDistanceFromLatLonInKm(
-              position.coords.latitude,
-              position.coords.longitude,
-              a.location.coordinates.lat, a.location.coordinates.lng
-            );
-            const distance2 = getDistanceFromLatLonInKm(
-              position.coords.latitude,
-              position.coords.longitude,
-              b.location.coordinates.lat, b.location.coordinates.lng
-            );
-            if (distance1 > distance2) {
-              return 1;
-            }
-            return -1;
-          });
-
-          this.setState({
-            long: position.coords.longitude,
-            lat: position.coords.latitude,
-            position,
-            rooms: freeRooms,
-          });
-        })
-       .catch(error => console.log(error));
-      },
-     (error) => Alert.alert(JSON.stringify(error)),
-     { enableHighAccuracy: true, timeout: 20000, maximumAge: 1000 }
-    );
+    this.props.navigator.setOnNavigatorEvent(this.onNavigatorEvent.bind(this));
+    console.log(props.freeRooms);
   }
 
   render() {
@@ -97,7 +37,7 @@ export default class MapScreen extends Component {
         }}
         style={styles.map}
       >
-        {this.state.rooms.map(room => (
+        {this.props.freeRooms.map(room => (
           <MapView.Marker
             key={`${room.siteid}--${room.roomid}--${room.classification}`}
             coordinate={{
@@ -115,3 +55,10 @@ export default class MapScreen extends Component {
     );
   }
 }
+
+const mapStateToProps = (state) => ({
+  freeRooms: state.freeRooms,
+  userPosition: state.userPosition,
+});
+
+export default connect(mapStateToProps)(MapScreen);

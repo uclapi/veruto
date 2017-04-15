@@ -1,7 +1,12 @@
 import { Navigation } from 'react-native-navigation';
+import { createStore } from 'redux';
+import { Provider } from 'react-redux';
 
 import { registerScreens } from './screens';
-registerScreens(); // this is where you register all of your app's screens
+import reducer from './reducers';
+
+const store = createStore(reducer);
+registerScreens(store, Provider);
 
 const createTabs = () => {
   const tabs = [
@@ -32,17 +37,3 @@ Navigation.startTabBasedApp({
     tabBarSelectedButtonColor: '#63d7cc',
   },
 });
-
-// Navigation.startSingleScreenApp({
-//   screen: {
-//     screen: 'veruto.HomeScreen',
-//     title: 'Closest Rooms',
-//     navigatorStyle: {
-//       navBarBackgroundColor: '#4dbce9',
-//       navBarTextColor: '#ffff00',
-//       navBarSubtitleTextColor: '#ff0000',
-//       navBarButtonColor: '#ffffff',
-//       statusBarTextColorScheme: 'light',
-//     },
-//   },
-// });
