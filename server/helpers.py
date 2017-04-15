@@ -94,12 +94,12 @@ def get_bookings_for_room(bookings, siteid, roomid):
 def filter_for_free_rooms(all_rooms, bookings, f_start, f_end):
     rooms_with_bookings = list(all_rooms)
     for idx, room in enumerate(all_rooms):
-        bookings = get_bookings_for_room(
+        bookings_for_room = get_bookings_for_room(
             bookings,
             room["siteid"],
             room["roomid"]
         )
-        rooms_with_bookings[idx]["bookings"] = bookings
+        rooms_with_bookings[idx]["bookings"] = bookings_for_room
 
     free_rooms = []
     for room in rooms_with_bookings:
