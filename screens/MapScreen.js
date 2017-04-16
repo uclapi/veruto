@@ -1,7 +1,6 @@
 import React, { Component, PropTypes } from 'react';
 import {
   StyleSheet,
-  Alert,
 } from 'react-native';
 
 import MapView from 'react-native-maps';
@@ -22,7 +21,7 @@ class MapScreen extends Component {
   };
   constructor(props) {
     super(props);
-    this.props.navigator.setOnNavigatorEvent(this.onNavigatorEvent.bind(this));
+    // this.props.navigator.setOnNavigatorEvent(this.onNavigatorEvent.bind(this));
     console.log(props.freeRooms);
   }
 
