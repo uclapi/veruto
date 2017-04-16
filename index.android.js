@@ -1,53 +1,39 @@
-/**
- * Sample React Native App
- * https://github.com/facebook/react-native
- * @flow
- */
+import { Navigation } from 'react-native-navigation';
+import { createStore } from 'redux';
+import { Provider } from 'react-redux';
 
-import React, { Component } from 'react';
-import {
-  AppRegistry,
-  StyleSheet,
-  Text,
-  View
-} from 'react-native';
+import { registerScreens } from './screens';
+import reducer from './reducers';
 
-export default class veruto extends Component {
-  render() {
-    return (
-      <View style={styles.container}>
-        <Text style={styles.welcome}>
-          Welcome to React Native!
-        </Text>
-        <Text style={styles.instructions}>
-          To get started, edit index.android.js
-        </Text>
-        <Text style={styles.instructions}>
-          Double tap R on your keyboard to reload,{'\n'}
-          Shake or press menu button for dev menu
-        </Text>
-      </View>
-    );
-  }
-}
+const store = createStore(reducer);
+registerScreens(store, Provider);
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: '#F5FCFF',
-  },
-  welcome: {
-    fontSize: 20,
-    textAlign: 'center',
-    margin: 10,
-  },
-  instructions: {
-    textAlign: 'center',
-    color: '#333333',
-    marginBottom: 5,
+const createTabs = () => {
+  const tabs = [
+    {
+      screen: 'veruto.HomeScreen',
+      icon: require('./images/home.png'),
+      selectedIcon: require('./images/home_selected.png'),
+      title: 'Closest Rooms',
+    },
+    {
+      screen: 'veruto.MapScreen',
+      icon: require('./images/three.png'),
+      selectedIcon: require('./images/three_selected.png'),
+      title: 'Closest Rooms',
+      navigatorStyle: {
+        tabBarBackgroundColor: '#4dbce9',
+      },
+    },
+  ];
+  return tabs;
+};
+
+Navigation.startTabBasedApp({
+  tabs: createTabs(),
+  appStyle: {
+    tabBarBackgroundColor: '#0f2362',
+    tabBarButtonColor: '#ffffff',
+    tabBarSelectedButtonColor: '#63d7cc',
   },
 });
-
-AppRegistry.registerComponent('veruto', () => veruto);
