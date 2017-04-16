@@ -1,8 +1,11 @@
 from os.path import join, dirname
 from dotenv import load_dotenv
-from helpers import fetch_free_rooms
-
 from flask import Flask, request, jsonify
+import graphene
+from flask_graphql import GraphQLView
+from verutographql.schema import Query
+
+from helpers import fetch_free_rooms
 
 app = Flask(__name__)
 
@@ -24,6 +27,13 @@ def free_rooms():
         "ok": True,
         "rooms": free_rooms
     })
+
+
+schema = graphene.Schema(query=Query)
+app.add_url_rule(
+    '/api/graphql',
+    view_func=GraphQLView.as_view('graphql', schema=schema)
+)
 
 
 if __name__ == "__main__":
