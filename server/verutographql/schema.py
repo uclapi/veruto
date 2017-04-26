@@ -38,11 +38,7 @@ class Room(graphene.ObjectType):
 
 
 class Query(graphene.ObjectType):
-    hello = graphene.String(name=graphene.Argument(graphene.String))
     free_rooms = graphene.List(Room, minutes=graphene.Argument(graphene.Int))
-
-    def resolve_hello(self, args, context, info):
-        return 'Hello {}'.format(args["name"])
 
     def resolve_free_rooms(self, args, context, info):
         if args.get("minutes"):
