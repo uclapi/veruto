@@ -35,6 +35,7 @@ class MapScreen extends Component {
           longitudeDelta: 0.00421,
         }}
         style={styles.map}
+        showsUserLocation
       >
         {this.props.freeRooms.map(room => (
           <MapView.Marker
@@ -44,9 +45,6 @@ class MapScreen extends Component {
               longitude: parseFloat(room.location.coordinates.lng),
             }}
             title={room.roomname}
-            showsUserLocation
-            showsMyLocationButton
-            showsCompass={false}
             // description={marker.description}
           />
         ))}

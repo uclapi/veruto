@@ -467,6 +467,12 @@ babel-plugin-check-es2015-constants@^6.22.0, babel-plugin-check-es2015-constants
   dependencies:
     babel-runtime "^6.22.0"
 
+babel-plugin-dotenv@~0.0.2:
+  version "0.0.2"
+  resolved "https://registry.yarnpkg.com/babel-plugin-dotenv/-/babel-plugin-dotenv-0.0.2.tgz#94d81ff7d1b35ef2750b77de2d8b2d1143c9aed8"
+  dependencies:
+    dotenv "^2.0.0"
+
 babel-plugin-external-helpers@^6.18.0:
   version "6.22.0"
   resolved "https://registry.yarnpkg.com/babel-plugin-external-helpers/-/babel-plugin-external-helpers-6.22.0.tgz#2285f48b02bd5dede85175caf8c62e86adccefa1"
@@ -1810,6 +1816,10 @@ dom-walk@^0.1.0:
 domain-browser@^1.1.1:
   version "1.1.7"
   resolved "https://registry.yarnpkg.com/domain-browser/-/domain-browser-1.1.7.tgz#867aa4b093faa05f1de08c06f4d7b21fdf8698bc"
+
+dotenv@^2.0.0:
+  version "2.0.0"
+  resolved "https://registry.yarnpkg.com/dotenv/-/dotenv-2.0.0.tgz#bd759c357aaa70365e01c96b7b0bec08a6e0d949"
 
 duplexer2@0.0.2:
   version "0.0.2"
@@ -4210,6 +4220,12 @@ react-devtools-core@^2.0.8:
   dependencies:
     cross-env "^3.1.4"
     ws "^2.0.3"
+
+react-native-dotenv@^0.0.4:
+  version "0.0.4"
+  resolved "https://registry.yarnpkg.com/react-native-dotenv/-/react-native-dotenv-0.0.4.tgz#cd66e8e5f227e0f8c9775004f158505fd60b7be0"
+  dependencies:
+    babel-plugin-dotenv "~0.0.2"
 
 react-native-maps@^0.13.1:
   version "0.13.1"

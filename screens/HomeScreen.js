@@ -12,6 +12,7 @@ import { connect } from 'react-redux';
 import Room from './HomeScreen/Room';
 import { sortRooms } from './HomeScreen/helpers';
 import { updateRooms, updateUserPosition } from '../actions';
+import { API_DOMAIN } from 'react-native-dotenv';
 
 const styles = StyleSheet.create({
   container: {
@@ -85,10 +86,41 @@ class HomeScreen extends Component {
     navigator.geolocation.getCurrentPosition(
       (position) => {
         console.log(position);
-        fetch(`http://localhost:5000/api/rooms.free?minutes=${this.state.minutesFuture}`)
+        const query = `
+          {
+            freeRooms(minutes: ${this.state.minutesFuture}){
+              roomid
+              roomname
+              siteid
+              classification
+              bookings {
+                contact
+                description
+                startTime
+                endTime
+                slotid
+                weeknumber
+                phone
+              }
+              location {
+                coordinates {
+                  lat
+                  lng
+                }
+              }
+            }
+          }`;
+        fetch(`${API_DOMAIN}/api/graphql`, {
+          method: 'POST',
+          body: query,
+          headers: new Headers({
+            'Content-Type': 'application/graphql',
+          }),
+        })
         .then(response => response.json())
         .then(json => {
-          const freeRooms = json.rooms;
+          console.log(json);
+          const freeRooms = json.data.freeRooms;
           const rooms = sortRooms(freeRooms, position);
 
           this.setState({
