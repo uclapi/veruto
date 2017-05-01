@@ -119,7 +119,6 @@ class HomeScreen extends Component {
         })
         .then(response => response.json())
         .then(json => {
-          console.log(json);
           const freeRooms = json.data.freeRooms;
           const rooms = sortRooms(freeRooms, position);
 
@@ -156,7 +155,15 @@ class HomeScreen extends Component {
       <View style={styles.container}>
         <ListView
           dataSource={this.state.dataSource}
-          renderRow={(room) => <Room diary={`https://roombooking.ucl.ac.uk/rb/bookableSpace/roomDiary.html?room=${room.roomid}&building=${room.siteid}&invoker=EFD`} map={`http://maps.apple.com/?ll=<${room.location.coordinates.lat}>,<${room.location.coordinates.lng}>`} distance={room.distance}>{room.roomname}</Room>}
+          renderRow={(room) =>
+            <Room
+              diary={`https://roombooking.ucl.ac.uk/rb/bookableSpace/roomDiary.html?room=${room.roomid}&building=${room.siteid}&invoker=EFD`}
+              map={`http://maps.apple.com/?ll=<${room.location.coordinates.lat}>,<${room.location.coordinates.lng}>`}
+              distance={room.distance}
+              name={room.roomname}
+              navigator={this.props.navigator}
+              room={room}
+            />}
           initialListSize={100}
           refreshControl={
             <RefreshControl

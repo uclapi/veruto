@@ -1,5 +1,5 @@
 import React, { Component, PropTypes } from 'react';
-import { View, Text, StyleSheet, Linking, Button } from 'react-native';
+import { View, Text, StyleSheet, Linking, Button, TouchableOpacity } from 'react-native';
 
 const styles = StyleSheet.create({
   container: {
@@ -34,8 +34,10 @@ export default class Room extends Component {
   static propTypes = {
     diary: PropTypes.string,
     map: PropTypes.string,
-    children: PropTypes.node,
+    name: PropTypes.string,
     distance: PropTypes.number,
+    navigator: PropTypes.object,
+    room: PropTypes.object,
   };
   constructor(props) {
     super(props);
@@ -44,12 +46,13 @@ export default class Room extends Component {
   }
 
   openDiary() {
-    Linking.canOpenURL(this.props.diary).then(supported => {
-      if (supported) {
-        Linking.openURL(this.props.diary);
-      } else {
-        console.log(`Don\'t know how to open URI: ${this.props.diary}`);
-      }
+    this.props.navigator.push({
+      title: `${this.props.name} Diary`,
+      screen: 'veruto.DiaryScreen',
+      passProps: {
+        siteid: this.props.room.siteid,
+        roomid: this.props.room.roomid,
+      },
     });
   }
   openMap() {
@@ -57,32 +60,25 @@ export default class Room extends Component {
       if (supported) {
         Linking.openURL(this.props.map);
       } else {
-        console.log(`Don\'t know how to open URI: ${this.props.diary}`);
+        console.log(`Don\'t know how to open URI: ${this.props.map}`);
       }
     });
   }
   render() {
     return (
-      <View>
-        <View style={styles.container}>
-          <View style={styles.leftContainer}>
-            <Text>{`${this.props.distance}m`}</Text>
-            <Text>{" "}</Text>
-            <Text>{this.props.children}</Text>
-          </View>
-          <View style={styles.rightContainer}>
-            <Button
-              onPress={this.openDiary}
-              title={"Diary"}
-            />
-            <Button
-              onPress={this.openMap}
-              title={"Map"}
-            />
-          </View>
+      <TouchableOpacity style={styles.container} onPress={this.openDiary}>
+        <View style={styles.leftContainer}>
+          <Text>{`${this.props.distance}m`}</Text>
+          <Text>{" "}</Text>
+          <Text>{this.props.name}</Text>
         </View>
-
-      </View>
+        <View style={styles.rightContainer}>
+          <Button
+            onPress={this.openMap}
+            title={"Directions"}
+          />
+        </View>
+      </TouchableOpacity>
     );
   }
 }

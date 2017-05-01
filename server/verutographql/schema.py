@@ -1,5 +1,7 @@
 import graphene
 import helpers
+import os
+import requests
 
 
 class Coordinates(graphene.ObjectType):
@@ -37,8 +39,18 @@ class Room(graphene.ObjectType):
     sitename = graphene.String()
 
 
+class Diary(graphene.ObjectType):
+    bookings = graphene.List(Booking)
+
+
 class Query(graphene.ObjectType):
     free_rooms = graphene.List(Room, minutes=graphene.Argument(graphene.Int))
+    diary = graphene.Field(
+        Diary,
+        roomid=graphene.Argument(graphene.String),
+        siteid=graphene.Argument(graphene.String),
+        date=graphene.Argument(graphene.String)
+    )
 
     def resolve_free_rooms(self, args, context, info):
         if args.get("minutes"):
@@ -78,3 +90,36 @@ class Query(graphene.ObjectType):
                 sitename=room["sitename"]
             ) for room in rooms
         ]
+
+    def resolve_diary(self, args, context, info):
+        url = "https://uclapi.com/roombookings/bookings"
+
+        formatted_date = args["date"].replace("-", "")
+
+        params = {
+            "token": os.environ["UCLAPI_TOKEN"],
+            "roomid": args["roomid"],
+            "siteid": args["siteid"],
+            "date": formatted_date
+        }
+        req = requests.get(url, params=params)
+        resp = req.json()
+
+        bookings = resp["bookings"]
+
+        return Diary(
+            bookings=[
+                Booking(
+                    contact=booking["contact"],
+                    description=booking["description"],
+                    start_time=booking["start_time"],
+                    end_time=booking["end_time"],
+                    roomid=booking["roomid"],
+                    roomname=booking["roomname"],
+                    siteid=booking["siteid"],
+                    slotid=booking["slotid"],
+                    weeknumber=booking["weeknumber"],
+                    phone=booking["phone"]
+                ) for booking in bookings
+            ]
+        )
