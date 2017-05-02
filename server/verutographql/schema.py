@@ -2,6 +2,7 @@ import graphene
 import helpers
 import os
 import requests
+from operator import itemgetter
 
 
 class Coordinates(graphene.ObjectType):
@@ -105,7 +106,7 @@ class Query(graphene.ObjectType):
         req = requests.get(url, params=params)
         resp = req.json()
 
-        bookings = resp["bookings"]
+        bookings = sorted(resp["bookings"], key=itemgetter("start_time"))
 
         return Diary(
             bookings=[
