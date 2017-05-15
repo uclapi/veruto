@@ -14,7 +14,8 @@
     "react-native-navigation": "v2.0.0-experimental.301",
     "react-native-simple-table": "^0.0.2",
     "react-redux": "^5.0.4",
-    "redux": "^3.6.0"
+    "redux": "^3.6.0",
+    "redux-persist": "^4.8.0"
   },
   "devDependencies": {
     "babel-cli": "^6.6.5",

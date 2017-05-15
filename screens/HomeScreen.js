@@ -5,7 +5,6 @@ import {
   ListView,
   RefreshControl,
   Alert,
-  AsyncStorage,
 } from 'react-native';
 import { connect } from 'react-redux';
 
@@ -22,8 +21,6 @@ const styles = StyleSheet.create({
   },
 });
 
-const MINUTES_FUTURE_KEY = '@Settings:minutes';
-
 class HomeScreen extends Component {
   static propTypes = {
     navigator: PropTypes.any,
@@ -31,6 +28,7 @@ class HomeScreen extends Component {
     updateRooms: PropTypes.func.isRequired,
     userPosition: PropTypes.object.isRequired,
     updateUserPosition: PropTypes.func.isRequired,
+    settingsMinutesFuture: PropTypes.string.isRequired,
   };
 
   static navigatorButtons = {
@@ -68,7 +66,6 @@ class HomeScreen extends Component {
         });
         break;
       case 'didAppear':
-        this.loadSettings().done();
         break;
       default:
         return;
@@ -79,10 +76,9 @@ class HomeScreen extends Component {
     this.setState({ refreshing: true });
     navigator.geolocation.getCurrentPosition(
       (position) => {
-        console.log(position);
         const query = `
           {
-            freeRooms(minutes: ${this.state.minutesFuture}){
+            freeRooms(minutes: ${this.props.settingsMinutesFuture}){
               roomid
               roomname
               siteid
@@ -131,20 +127,6 @@ class HomeScreen extends Component {
     );
   }
 
-  loadSettings = async () => {
-    try {
-      const value = await AsyncStorage.getItem(MINUTES_FUTURE_KEY);
-      if (value !== null) {
-        this.setState({ minutesFuture: value });
-        console.log(`Recovered selection from disk: ${value}`);
-      } else {
-        console.log('Initialized with no selection on disk.');
-      }
-    } catch (error) {
-      Alert.alert(`AsyncStorage error: ${error.message}`);
-    }
-  };
-
   render() {
     return (
       <View style={styles.container}>
@@ -175,6 +157,7 @@ class HomeScreen extends Component {
 const mapStateToProps = (state) => ({
   freeRooms: state.freeRooms,
   userPosition: state.userPosition,
+  settingsMinutesFuture: state.settingsMinutesFuture,
 });
 
 const mapDispatchToProps = {

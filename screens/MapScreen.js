@@ -22,7 +22,6 @@ class MapScreen extends Component {
   constructor(props) {
     super(props);
     // this.props.navigator.setOnNavigatorEvent(this.onNavigatorEvent.bind(this));
-    console.log(props.freeRooms);
   }
 
   render() {
