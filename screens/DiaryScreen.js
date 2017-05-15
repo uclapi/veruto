@@ -98,7 +98,6 @@ class DiaryScreen extends Component {
     })
     .then(response => response.json())
     .then(json => {
-      console.log(json);
       const bookings = json.data.diary.bookings;
       const cleanedBookings = bookings.map((booking) => {
         const start = new Moment(booking.startTime);
