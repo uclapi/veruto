@@ -66,19 +66,19 @@ export default class Room extends Component {
   }
   render() {
     return (
-      <TouchableOpacity style={styles.container} onPress={this.openDiary}>
-        <View style={styles.leftContainer}>
+      <View style={styles.container}>
+        <TouchableOpacity style={styles.leftContainer} onPress={this.openDiary}>
           <Text>{`${this.props.distance}m`}</Text>
           <Text>{" "}</Text>
           <Text>{this.props.name}</Text>
-        </View>
+        </TouchableOpacity>
         <View style={styles.rightContainer}>
           <Button
             onPress={this.openMap}
             title={"Directions"}
           />
         </View>
-      </TouchableOpacity>
+      </View>
     );
   }
 }
