@@ -127,7 +127,7 @@ class HomeScreen extends Component {
        .catch(error => console.log(error));
       },
      (error) => Alert.alert(JSON.stringify(error)),
-     { enableHighAccuracy: true, timeout: 20000, maximumAge: 1000 }
+     { enableHighAccuracy: true, timeout: 20000, maximumAge: (2 * 60 * 60 * 1000) }
     );
   }
 
