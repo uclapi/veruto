@@ -4,6 +4,7 @@ import {
   RefreshControl,
   View,
   ListView,
+  Text,
 } from 'react-native';
 
 import { connect } from 'react-redux';
@@ -34,7 +35,6 @@ class DiaryScreen extends Component {
   constructor(props) {
     super(props);
     this.fetchDiary = this.fetchDiary.bind(this);
-    this.onRefresh = this.onRefresh.bind(this);
 
     this.state = {
       dataSource: new ListView.DataSource({ rowHasChanged: (r1, r2) => r1 !== r2 }),
@@ -47,13 +47,8 @@ class DiaryScreen extends Component {
     this.fetchDiary();
   }
 
-  onRefresh() {
-    this.setState({ refreshing: true });
-    this.fetchDiary();
-    this.setState({ refreshing: false });
-  }
-
   fetchDiary() {
+    this.setState({ refreshing: true });
     const today = new Moment();
     const date = today.format('YYYY-MM-DD');
     console.log(date);
@@ -85,6 +80,7 @@ class DiaryScreen extends Component {
       this.setState({
         bookings,
         dataSource: this.state.dataSource.cloneWithRows(bookings),
+        refreshing: false,
       });
     });
   }
@@ -92,23 +88,32 @@ class DiaryScreen extends Component {
   render() {
     return (
       <View style={styles.container}>
-        <ListView
-          dataSource={this.state.dataSource}
-          renderRow={(booking) =>
-            <DiaryItem
-              start={booking.startTime}
-              end={booking.endTime}
-              description={booking.description}
-              contact={booking.contact}
-            />}
-          initialListSize={100}
-          refreshControl={
-            <RefreshControl
-              refreshing={this.state.refreshing}
-              onRefresh={this.onRefresh}
+        <Choose>
+          <When condition={this.state.bookings.length === 0 && this.state.refreshing === false}>
+            <Text>
+              {'No bookings in this room today.'}
+            </Text>
+          </When>
+          <Otherwise>
+            <ListView
+              dataSource={this.state.dataSource}
+              renderRow={(booking) =>
+                <DiaryItem
+                  start={booking.startTime}
+                  end={booking.endTime}
+                  description={booking.description}
+                  contact={booking.contact}
+                />}
+              initialListSize={100}
+              refreshControl={
+                <RefreshControl
+                  refreshing={this.state.refreshing}
+                  onRefresh={this.fetchDiary}
+                />
+              }
             />
-          }
-        />
+          </Otherwise>
+        </Choose>
       </View>
     );
   }

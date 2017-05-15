@@ -45,7 +45,6 @@ class HomeScreen extends Component {
   constructor(props) {
     super(props);
     this.updateLocation = this.updateLocation.bind(this);
-    this.onRefresh = this.onRefresh.bind(this);
     this.props.navigator.setOnNavigatorEvent(this.onNavigatorEvent.bind(this));
 
     this.state = {
@@ -76,13 +75,8 @@ class HomeScreen extends Component {
     }
   }
 
-  onRefresh() {
-    this.setState({ refreshing: true });
-    this.updateLocation();
-    this.setState({ refreshing: false });
-  }
-
   updateLocation() {
+    this.setState({ refreshing: true });
     navigator.geolocation.getCurrentPosition(
       (position) => {
         console.log(position);
@@ -125,6 +119,7 @@ class HomeScreen extends Component {
           this.setState({
             buttonActive: false,
             dataSource: this.state.dataSource.cloneWithRows(rooms),
+            refreshing: false,
           });
           this.props.updateRooms(rooms);
           this.props.updateUserPosition(position);
@@ -168,7 +163,7 @@ class HomeScreen extends Component {
           refreshControl={
             <RefreshControl
               refreshing={this.state.refreshing}
-              onRefresh={this.onRefresh}
+              onRefresh={this.updateLocation}
             />
           }
         />
