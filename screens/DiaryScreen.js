@@ -1,28 +1,54 @@
 import React, { Component, PropTypes } from 'react';
 import {
   StyleSheet,
-  RefreshControl,
   View,
-  ListView,
   Text,
+  ActivityIndicator,
 } from 'react-native';
 
 import { connect } from 'react-redux';
 import Moment from 'moment';
 import { API_DOMAIN } from 'react-native-dotenv';
-
-import DiaryItem from './DiaryScreen/DiaryItem';
+import Table from 'react-native-simple-table';
 
 
 const styles = StyleSheet.create({
   container: {
     display: 'flex',
     backgroundColor: '#F5FCFF',
-    justifyContent: 'space-around',
+    justifyContent: 'center',
     flexDirection: 'row',
     height: '100%',
   },
+  centering: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    padding: 8,
+  },
 });
+
+const columns = [
+  {
+    title: 'Start',
+    dataIndex: 'cleanStart',
+    width: 50,
+  },
+  {
+    title: 'End',
+    dataIndex: 'cleanEnd',
+    width: 50,
+  },
+  {
+    title: 'Description',
+    dataIndex: 'description',
+    width: 150,
+  },
+  {
+    title: 'Contact',
+    dataIndex: 'contact',
+    width: 110,
+  },
+];
 
 class DiaryScreen extends Component {
   static propTypes = {
@@ -37,9 +63,8 @@ class DiaryScreen extends Component {
     this.fetchDiary = this.fetchDiary.bind(this);
 
     this.state = {
-      dataSource: new ListView.DataSource({ rowHasChanged: (r1, r2) => r1 !== r2 }),
       bookings: [],
-      refreshing: false,
+      loading: true,
     };
   }
 
@@ -48,7 +73,6 @@ class DiaryScreen extends Component {
   }
 
   fetchDiary() {
-    this.setState({ refreshing: true });
     const today = new Moment();
     const date = today.format('YYYY-MM-DD');
     console.log(date);
@@ -76,11 +100,20 @@ class DiaryScreen extends Component {
     .then(json => {
       console.log(json);
       const bookings = json.data.diary.bookings;
+      const cleanedBookings = bookings.map((booking) => {
+        const start = new Moment(booking.startTime);
+        const end = new Moment(booking.endTime);
+        return {
+          ...booking,
+          cleanStart: start.format('HH:mm'),
+          cleanEnd: end.format('HH:mm'),
+        };
+      });
 
       this.setState({
         bookings,
-        dataSource: this.state.dataSource.cloneWithRows(bookings),
-        refreshing: false,
+        cleanedBookings,
+        loading: false,
       });
     });
   }
@@ -89,28 +122,22 @@ class DiaryScreen extends Component {
     return (
       <View style={styles.container}>
         <Choose>
-          <When condition={this.state.bookings.length === 0 && this.state.refreshing === false}>
+          <When condition={this.state.loading === true}>
+            <ActivityIndicator
+              animating={this.state.loading}
+              style={[styles.centering, { height: 80 }]}
+              size={"large"}
+            />
+          </When>
+          <When condition={this.state.bookings.length === 0 && this.state.loading === false}>
             <Text>
               {'No bookings in this room today.'}
             </Text>
           </When>
           <Otherwise>
-            <ListView
-              dataSource={this.state.dataSource}
-              renderRow={(booking) =>
-                <DiaryItem
-                  start={booking.startTime}
-                  end={booking.endTime}
-                  description={booking.description}
-                  contact={booking.contact}
-                />}
-              initialListSize={100}
-              refreshControl={
-                <RefreshControl
-                  refreshing={this.state.refreshing}
-                  onRefresh={this.fetchDiary}
-                />
-              }
+            <Table
+              columns={columns}
+              dataSource={this.state.cleanedBookings}
             />
           </Otherwise>
         </Choose>

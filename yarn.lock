@@ -4237,6 +4237,10 @@ react-native-navigation@v2.0.0-experimental.301:
   dependencies:
     lodash "4.x.x"
 
+react-native-simple-table@^0.0.2:
+  version "0.0.2"
+  resolved "https://registry.yarnpkg.com/react-native-simple-table/-/react-native-simple-table-0.0.2.tgz#cfa344428c45e64c8186ef0fb6734a83630a4b04"
+
 react-native@0.43.3:
   version "0.43.3"
   resolved "https://registry.yarnpkg.com/react-native/-/react-native-0.43.3.tgz#4f8e0d8d88827553789c02ef21cbc1afb68474d0"

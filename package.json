@@ -12,6 +12,7 @@
     "react-native": "0.43.3",
     "react-native-maps": "^0.13.1",
     "react-native-navigation": "v2.0.0-experimental.301",
+    "react-native-simple-table": "^0.0.2",
     "react-redux": "^5.0.4",
     "redux": "^3.6.0"
   },
