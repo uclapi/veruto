@@ -4,6 +4,7 @@ from flask import Flask, request, jsonify
 import graphene
 from flask_graphql import GraphQLView
 from verutographql.schema import Query
+import json
 
 from helpers import fetch_free_rooms
 
@@ -30,10 +31,27 @@ def free_rooms():
 
 
 schema = graphene.Schema(query=Query)
-app.add_url_rule(
-    '/api/graphql',
-    view_func=GraphQLView.as_view('graphql', schema=schema)
-)
+# app.add_url_rule(
+#     '/api/graphql',
+#     view_func=GraphQLView.as_view('graphql', schema=schema)
+# )
+
+
+@app.route("/api/graphql/", methods=['POST'])
+def graphql():
+    # import pdb; pdb.set_trace()
+    result = schema.execute(
+        json.loads(request.get_data().decode('utf-8'))["query"]
+    )
+    print("data: ", result.data)
+    print("errors: ", result.errors)
+    print("invalid: ", result.invalid)
+    if result.invalid:
+        return jsonify({
+            "errors": [error.message for error in result.errors]
+        })
+    else:
+        return jsonify(result.data)
 
 
 if __name__ == "__main__":

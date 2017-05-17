@@ -1,0 +1,10 @@
+{
+  "name": "serverless-graphql-veruto",
+  "version": "1.0.0",
+  "description": "Serverless backend for veruto",
+  "author": "Wilhelm Klopp",
+  "license": "MIT",
+  "dependencies": {
+    "serverless-python-requirements": "^2.2.1"
+  }
+}

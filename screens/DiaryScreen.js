@@ -8,7 +8,7 @@ import {
 
 import { connect } from 'react-redux';
 import Moment from 'moment';
-import { API_DOMAIN } from 'react-native-dotenv';
+import { API_DOMAIN, API_KEY } from 'react-native-dotenv';
 import Table from 'react-native-simple-table';
 
 
@@ -89,16 +89,17 @@ class DiaryScreen extends Component {
         }
       }
     }`;
-    fetch(`${API_DOMAIN}/api/graphql`, {
+    fetch(`${API_DOMAIN}`, {
       method: 'POST',
-      body: query,
+      body: JSON.stringify({ query }),
       headers: new Headers({
         'Content-Type': 'application/graphql',
+        'x-api-key': API_KEY,
       }),
     })
     .then(response => response.json())
     .then(json => {
-      const bookings = json.data.diary.bookings;
+      const bookings = json.diary.bookings;
       const cleanedBookings = bookings.map((booking) => {
         const start = new Moment(booking.startTime);
         const end = new Moment(booking.endTime);

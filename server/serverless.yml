@@ -1,0 +1,27 @@
+service: serverless-graphql-veruto
+
+plugins:
+  - serverless-python-requirements
+
+provider:
+  name: aws
+  runtime: python3.6
+  profile: serverless
+  apiKeys:
+    - verutoTempAccessKey
+  environment:
+    UCLAPI_TOKEN: ${file(./serverless.env.yml):dev.UCLAPI_TOKEN}
+
+functions:
+  graphql:
+    handler: graphql_function.graphql
+    events:
+      - http:
+          path: graphql
+          method: post
+          cors: true
+          private: true
+
+custom:
+  pythonRequirements:
+    dockerizePip: true

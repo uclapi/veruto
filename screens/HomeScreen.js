@@ -12,7 +12,7 @@ import { connect } from 'react-redux';
 import Room from './HomeScreen/Room';
 import { sortRooms } from './HomeScreen/helpers';
 import { updateRooms, updateUserPosition } from '../actions';
-import { API_DOMAIN } from 'react-native-dotenv';
+import { API_DOMAIN, API_KEY } from 'react-native-dotenv';
 
 const styles = StyleSheet.create({
   container: {
@@ -101,16 +101,17 @@ class HomeScreen extends Component {
               }
             }
           }`;
-        fetch(`${API_DOMAIN}/api/graphql`, {
+        fetch(`${API_DOMAIN}`, {
           method: 'POST',
-          body: query,
+          body: JSON.stringify({ query }),
           headers: new Headers({
             'Content-Type': 'application/graphql',
+            'x-api-key': API_KEY,
           }),
         })
         .then(response => response.json())
         .then(json => {
-          const freeRooms = json.data.freeRooms;
+          const freeRooms = json.freeRooms;
           const rooms = sortRooms(freeRooms, position);
 
           this.setState({
