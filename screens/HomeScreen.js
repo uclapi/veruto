@@ -5,6 +5,7 @@ import {
   ListView,
   RefreshControl,
   Alert,
+  Platform,
 } from 'react-native';
 import { connect } from 'react-redux';
 
@@ -123,7 +124,7 @@ class HomeScreen extends Component {
        .catch(error => console.log(error));
       },
      (error) => Alert.alert(JSON.stringify(error)),
-     { enableHighAccuracy: true, timeout: 20000, maximumAge: (2 * 60 * 60 * 1000) }
+     { enableHighAccuracy: false, timeout: 20000, maximumAge: (2 * 60 * 60 * 1000) }
     );
   }
 
@@ -135,7 +136,11 @@ class HomeScreen extends Component {
           renderRow={(room) =>
             <Room
               diary={`https://roombooking.ucl.ac.uk/rb/bookableSpace/roomDiary.html?room=${room.roomid}&building=${room.siteid}&invoker=EFD`}
-              map={`http://maps.apple.com/?ll=<${room.location.coordinates.lat}>,<${room.location.coordinates.lng}>`}
+              map={
+                (Platform.OS === 'ios') ?
+                `http://maps.apple.com/?daddr=${room.location.coordinates.lat},${room.location.coordinates.lng}` :
+                `http://maps.google.com/maps?daddr=${room.location.coordinates.lat},${room.location.coordinates.lng}`
+              }
               distance={room.distance}
               name={room.roomname}
               navigator={this.props.navigator}
