@@ -51,7 +51,9 @@ def graphql():
             "errors": [error.message for error in result.errors]
         })
     else:
-        return jsonify(result.data)
+        return jsonify({
+            "data": result.data
+        })
 
 
 if __name__ == "__main__":
