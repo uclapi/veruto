@@ -101,7 +101,7 @@ class HomeScreen extends Component {
               }
             }
           }`;
-        fetch(`${API_DOMAIN}`, {
+        fetch(API_DOMAIN, {
           method: 'POST',
           body: JSON.stringify({ query }),
           headers: new Headers({
