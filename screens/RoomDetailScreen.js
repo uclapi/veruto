@@ -10,20 +10,30 @@ import { connect } from 'react-redux';
 import Moment from 'moment';
 import { API_DOMAIN, API_KEY } from 'react-native-dotenv';
 import Table from 'react-native-simple-table';
+import MapView from 'react-native-maps';
+import Polyline from '@mapbox/polyline';
 
 
 const styles = StyleSheet.create({
   container: {
     display: 'flex',
-    backgroundColor: '#F5FCFF',
     justifyContent: 'center',
-    flexDirection: 'row',
-    height: '100%',
+    flexDirection: 'column',
+    // height: '100%',
   },
-  centering: {
-    alignItems: 'center',
-    justifyContent: 'center',
-    padding: 8,
+  loading: {
+    marginTop: 20,
+  },
+  table: {
+    marginTop: 10,
+    width: '100%',
+  },
+  diaryHeader: {
+    fontWeight: 'bold',
+  },
+  map: {
+    height: 200,
+    width: '100%',
   },
 });
 
@@ -50,13 +60,12 @@ const columns = [
   },
 ];
 
-class DiaryScreen extends Component {
+class RoomDetailScreen extends Component {
   static propTypes = {
     navigator: PropTypes.object,
     freeRooms: PropTypes.array.isRequired,
     userPosition: PropTypes.object.isRequired,
-    siteid: PropTypes.string.isRequired,
-    roomid: PropTypes.string.isRequired,
+    room: PropTypes.object.isRequired,
   };
   constructor(props) {
     super(props);
@@ -70,14 +79,33 @@ class DiaryScreen extends Component {
 
   componentDidMount() {
     this.fetchDiary();
+    this.getPath(
+      `${this.props.userPosition.lat},${this.props.userPosition.long}`,
+      `${this.props.room.location.coordinates.lat},${this.props.room.location.coordinates.lng}`
+    );
   }
+
+  // https://medium.com/@ali_oguzhan/react-native-maps-with-google-directions-api-bc716ed7a366
+  async getPath(startLoc, destinationLoc) {
+    const resp = await fetch(`https://maps.googleapis.com/maps/api/directions/json?origin=${startLoc}&destination=${destinationLoc}&mode=walking`);
+    const respJson = await resp.json();
+    const points = Polyline.decode(respJson.routes[0].overview_polyline.points);
+    const coords = points.map(point => (
+      {
+        latitude: point[0],
+        longitude: point[1],
+      }
+    ));
+    this.setState({ coords });
+  }
+
 
   fetchDiary() {
     const today = new Moment();
     const date = today.format('YYYY-MM-DD');
     console.log(date);
     const query = `{
-      diary(roomid: "${this.props.roomid}", siteid: "${this.props.siteid}", date: "${date}") {
+      diary(roomid: "${this.props.room.roomid}", siteid: "${this.props.room.siteid}", date: "${date}") {
         bookings {
           contact
           description
@@ -121,11 +149,36 @@ class DiaryScreen extends Component {
   render() {
     return (
       <View style={styles.container}>
+        <MapView
+          initialRegion={{
+            latitude: 51.5245625,
+            longitude: -0.1362288,
+            latitudeDelta: 0.0042,
+            longitudeDelta: 0.0021,
+          }}
+          style={styles.map}
+          showsUserLocation
+          showsMyLocationButton
+        >
+          <MapView.Marker
+            coordinate={{
+              latitude: parseFloat(this.props.room.location.coordinates.lat),
+              longitude: parseFloat(this.props.room.location.coordinates.lng),
+            }}
+            title={this.props.room.roomname}
+            // description={marker.description}
+          />
+          <MapView.Polyline
+            coordinates={this.state.coords}
+            strokeWidth={2}
+            strokeColor="red"
+          />
+        </MapView>
         <Choose>
           <When condition={this.state.loading === true}>
             <ActivityIndicator
               animating={this.state.loading}
-              style={[styles.centering, { height: 80 }]}
+              style={styles.loading}
               size={"large"}
             />
           </When>
@@ -135,10 +188,13 @@ class DiaryScreen extends Component {
             </Text>
           </When>
           <Otherwise>
-            <Table
-              columns={columns}
-              dataSource={this.state.cleanedBookings}
-            />
+            <View style={styles.table}>
+              <Text style={styles.diaryHeader}>{'Diary'}</Text>
+              <Table
+                columns={columns}
+                dataSource={this.state.cleanedBookings}
+              />
+            </View>
           </Otherwise>
         </Choose>
       </View>
@@ -151,4 +207,4 @@ const mapStateToProps = (state) => ({
   userPosition: state.userPosition,
 });
 
-export default connect(mapStateToProps)(DiaryScreen);
+export default connect(mapStateToProps)(RoomDetailScreen);

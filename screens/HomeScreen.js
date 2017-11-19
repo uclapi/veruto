@@ -19,6 +19,8 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: '#F5FCFF',
     alignSelf: 'stretch',
+    marginHorizontal: 5,
+    marginVertical: 5,
   },
 });
 
@@ -136,7 +138,6 @@ class HomeScreen extends Component {
           dataSource={this.state.dataSource}
           renderRow={(room) =>
             <Room
-              diary={`https://roombooking.ucl.ac.uk/rb/bookableSpace/roomDiary.html?room=${room.roomid}&building=${room.siteid}&invoker=EFD`}
               map={
                 (Platform.OS === 'ios') ?
                 `http://maps.apple.com/?daddr=${room.location.coordinates.lat},${room.location.coordinates.lng}` :

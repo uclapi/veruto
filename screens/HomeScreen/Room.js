@@ -4,29 +4,16 @@ import { View, Text, StyleSheet, Linking, Button, TouchableOpacity } from 'react
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    padding: 8,
     flexDirection: 'row',
-    paddingBottom: 0,
-  },
-  leftContainer: {
-    flex: 1,
-    flexDirection: 'row',
-  },
-  rightContainer: {
-    flex: 1,
-    flexDirection: 'row',
-    justifyContent: 'flex-end',
+    justifyContent: 'space-between',
+    height: 40,
     alignItems: 'center',
   },
-  columnContainer: {
-    flex: 1,
-    flexDirection: 'column',
-    paddingTop: 0,
-  },
-  roomnameContainer: {
-  },
-  freeUntil: {
-    fontSize: 10,
+  roomName: {
+    marginLeft: 5,
+    flexGrow: 2,
+    // textAlign: 'right',
+    // alignSelf: 'center',
   },
 });
 
@@ -48,10 +35,9 @@ export default class Room extends Component {
   openDiary() {
     this.props.navigator.push({
       title: `${this.props.name} Diary`,
-      screen: 'veruto.DiaryScreen',
+      screen: 'veruto.RoomDetailScreen',
       passProps: {
-        siteid: this.props.room.siteid,
-        roomid: this.props.room.roomid,
+        room: this.props.room,
       },
     });
   }
@@ -66,19 +52,10 @@ export default class Room extends Component {
   }
   render() {
     return (
-      <View style={styles.container}>
-        <TouchableOpacity style={styles.leftContainer} onPress={this.openDiary}>
-          <Text>{`${this.props.distance}m`}</Text>
-          <Text>{" "}</Text>
-          <Text>{this.props.name}</Text>
-        </TouchableOpacity>
-        <View style={styles.rightContainer}>
-          <Button
-            onPress={this.openMap}
-            title={"Directions"}
-          />
-        </View>
-      </View>
+      <TouchableOpacity style={styles.container} onPress={this.openDiary}>
+        <Text>{`${this.props.distance}m`}</Text>
+        <Text style={styles.roomName}>{this.props.name}</Text>
+      </TouchableOpacity>
     );
   }
 }
