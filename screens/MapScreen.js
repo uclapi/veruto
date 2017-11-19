@@ -35,6 +35,7 @@ class MapScreen extends Component {
         }}
         style={styles.map}
         showsUserLocation
+        showsMyLocationButton
       >
         {this.props.freeRooms.map(room => (
           <MapView.Marker
