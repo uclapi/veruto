@@ -10,8 +10,6 @@ import { connect } from 'react-redux';
 import Moment from 'moment';
 import { API_DOMAIN, API_KEY } from 'react-native-dotenv';
 import Table from 'react-native-simple-table';
-import MapView from 'react-native-maps';
-import Polyline from '@mapbox/polyline';
 
 
 const styles = StyleSheet.create({
@@ -25,7 +23,6 @@ const styles = StyleSheet.create({
     marginTop: 20,
   },
   table: {
-    marginTop: 10,
     width: '100%',
   },
   diaryHeader: {
@@ -79,24 +76,6 @@ class RoomDetailScreen extends Component {
 
   componentDidMount() {
     this.fetchDiary();
-    this.getPath(
-      `${this.props.userPosition.lat},${this.props.userPosition.long}`,
-      `${this.props.room.location.coordinates.lat},${this.props.room.location.coordinates.lng}`
-    );
-  }
-
-  // https://medium.com/@ali_oguzhan/react-native-maps-with-google-directions-api-bc716ed7a366
-  async getPath(startLoc, destinationLoc) {
-    const resp = await fetch(`https://maps.googleapis.com/maps/api/directions/json?origin=${startLoc}&destination=${destinationLoc}&mode=walking`);
-    const respJson = await resp.json();
-    const points = Polyline.decode(respJson.routes[0].overview_polyline.points);
-    const coords = points.map(point => (
-      {
-        latitude: point[0],
-        longitude: point[1],
-      }
-    ));
-    this.setState({ coords });
   }
 
 
@@ -149,31 +128,6 @@ class RoomDetailScreen extends Component {
   render() {
     return (
       <View style={styles.container}>
-        <MapView
-          initialRegion={{
-            latitude: 51.5245625,
-            longitude: -0.1362288,
-            latitudeDelta: 0.0042,
-            longitudeDelta: 0.0021,
-          }}
-          style={styles.map}
-          showsUserLocation
-          showsMyLocationButton
-        >
-          <MapView.Marker
-            coordinate={{
-              latitude: parseFloat(this.props.room.location.coordinates.lat),
-              longitude: parseFloat(this.props.room.location.coordinates.lng),
-            }}
-            title={this.props.room.roomname}
-            // description={marker.description}
-          />
-          <MapView.Polyline
-            coordinates={this.state.coords}
-            strokeWidth={2}
-            strokeColor="red"
-          />
-        </MapView>
         <Choose>
           <When condition={this.state.loading === true}>
             <ActivityIndicator
@@ -189,7 +143,6 @@ class RoomDetailScreen extends Component {
           </When>
           <Otherwise>
             <View style={styles.table}>
-              <Text style={styles.diaryHeader}>{'Diary'}</Text>
               <Table
                 columns={columns}
                 dataSource={this.state.cleanedBookings}
