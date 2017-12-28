@@ -1,4 +1,4 @@
 # veruto
 A mobile app that finds the closest free room in UCL
 
-WIP
+Now here: https://github.com/uclapi/room-buddy
